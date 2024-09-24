@@ -22,11 +22,12 @@ function App() {
   useEffect(() => {
     if (location) {
       const getWeather = () => {
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=fahrenheit`, {method: 'GET', headers: { accept: 'application/json' }})
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,rain,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`, {method: 'GET', headers: { accept: 'application/json' }})
           .then(response => response.json())
           .then(data => {
             setWeatherData(data)
             setTemperature(Math.floor(data.current.temperature_2m))
+            setError(null)
           })
           .catch(err => {
             setError("No location found. Please check your input and try again.")
@@ -41,6 +42,7 @@ function App() {
           setLongitude(data.results[0].longitude)
         }).then(() => {
           getWeather()
+          setError(null)
         })
         .catch(err => {
           setError("No location found. Please check your input and try again.")
@@ -50,25 +52,42 @@ function App() {
 
   return (
     <>
-      <main>
+      <main className="bg-gradient-to-b from-gray-700 to-gray-300 min-h-screen">
+        <h1 className="sr-only">Weather Check Application</h1>
         <div className="container mx-auto">
-          <form onSubmit={handleSubmit}>
-            <input type="text" id="location-search" placeholder="Search for location..." ref={inputLocation} className="" />
-            <button className="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">
-              Submit
-            </button>
-            {error && <label htmlFor="location-search" className="error">{error}</label>}
-            <div>{apiLocationName}, {latitude}, {longitude}, temp: {temperature}</div>
-          </form>
+          <section id="weather-container" className="p-5">
+            <form onSubmit={handleSubmit} className="mb-5">
+              <div className="form-control relative">
+                <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <svg class="w-4 h-4 text-gray-500 dark:text-gray-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m19 19-4-4m0-7A7 7 0 1 1 1 8a7 7 0 0 1 14 0Z"/>
+                    </svg>
+                </div>
+                <input type="search" id="location-search" className="block w-full p-4 ps-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search for the name of your city or state..." ref={inputLocation} />
+                <button type="submit" className="text-white absolute end-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+              </div>
+              {error && (
+                <div role="alert">
+                  <div class="bg-red-500 text-white font-bold rounded-t px-4 py-2">
+                    Error
+                  </div>
+                  <div class="border border-t-0 border-red-400 rounded-b bg-red-100 px-4 py-3 text-red-700">
+                    <label htmlFor="location-search" className="error">{error}</label>
+                  </div>
+                </div>
+              )}
+            </form>
 
-          <Temperature temperature={temperature} />
+            <Temperature temperature={temperature} locationname={apiLocationName} />
+            
+            {weatherData && (
+              <div>
+                <h2>Weather Data:</h2>
+                <pre>{JSON.stringify(weatherData, null, 2)}</pre>
+              </div>
+            )}
+          </section>
           
-          {weatherData && (
-            <div>
-              <h2>Weather Data:</h2>
-              <pre>{JSON.stringify(weatherData, null, 2)}</pre>
-            </div>
-          )}
           
         </div>
         
