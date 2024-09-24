@@ -20,8 +20,6 @@ function App() {
   }
 
   useEffect(() => {
-    const options = { method: 'GET', headers: { accept: 'application/json' } }
-
     if (location) {
       const getWeather = () => {
         fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m&temperature_unit=fahrenheit`, {method: 'GET', headers: { accept: 'application/json' }})
@@ -35,7 +33,7 @@ function App() {
           })
       }
   
-      fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`, options)
+      fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`, {method: 'GET', headers: { accept: 'application/json' }})
         .then(response => response.json())
         .then(data => {
           setapiLocationName(data.results[0].name)
@@ -59,6 +57,7 @@ function App() {
             <button className="bg-sky-500 hover:bg-sky-700 px-5 py-2 text-sm leading-5 rounded-full font-semibold text-white">
               Submit
             </button>
+            {error && <label htmlFor="location-search" className="error">{error}</label>}
             <div>{apiLocationName}, {latitude}, {longitude}, temp: {temperature}</div>
           </form>
 
@@ -70,7 +69,7 @@ function App() {
               <pre>{JSON.stringify(weatherData, null, 2)}</pre>
             </div>
           )}
-          {error && <label htmlFor="location-search" className="error">{error}</label>}
+          
         </div>
         
       </main>
