@@ -11,10 +11,20 @@ function App() {
   const [apiLocationName, setapiLocationName] = useState(null)
   const [temperature, setTemperature] = useState(null)
   const [inputLocation, setInputLocation] = useState("")
+  const [geolocation, setGeolocation] = useState(false)
 
   const handleSubmit = (e) => {
     e.preventDefault()
     handleLocation(inputLocation)
+  }
+
+  if ("geolocation" in navigator && !geolocation) {
+    // geolocation is available and been set once
+    navigator.geolocation.getCurrentPosition((position) => {
+      console.log(position)
+      handleWeather(position.coords.latitude, position.coords.longitude)
+      setGeolocation(true)
+    });
   }
 
   function handleLocation(locationValue) {
@@ -43,6 +53,8 @@ function App() {
     }
 
     getWeather().then(data => {
+      // default state if using browser geolocation. can run location call again to get location name from api.
+      if (apiLocationName === null) setapiLocationName("Current Location")
       setWeatherData(data)
       setTemperature(Math.floor(data.current.temperature_2m))
       setError(null) // clear any existing errors if successful

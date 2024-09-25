@@ -1,6 +1,6 @@
 import React, {useEffect} from "react"
 
-function Searchbar( {submitFunction, error, inputLocation, onInputLocation, onError}) {
+function Searchbar( {submitFunction, error, inputLocation, onInputLocation, onError} ) {
 
     useEffect(() =>{
       if (inputLocation) {
