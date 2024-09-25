@@ -1,7 +1,7 @@
 import React from "react"
 import { WeatherSvg } from "weather-icons-animated";
 
-function Temperature( {temperature, locationname, windspeed} ) {
+function Temperature( {temperature, locationname, windspeed, humidity, precipitation} ) {
     
     const currentTemperature = (temp) => {
       switch(true) {
@@ -22,7 +22,9 @@ function Temperature( {temperature, locationname, windspeed} ) {
                 <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">{locationname}</h2>
                 <span className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">{currentTemperature(temperature)}<sup>°</sup></span>
               </div>
-              Current Windspeed: {windspeed}MP/H
+              Current Windspeed: {windspeed} MP/H<br />
+              Current Humidity: {humidity}%<br />
+              Current Precipitation: {precipitation}%
           </div>
         )}
       </>

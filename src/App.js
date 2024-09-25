@@ -11,6 +11,8 @@ function App() {
   const [latitude, setLatitude] = useState(0)
   const [longitude, setLongitude] = useState(0)
   const [temperature, setTemperature] = useState(null)
+  const [humidity, setHumidity] = useState(null)
+  const [precipitation, setPrecipitation] = useState(null)
   const [windspeed, setWindspeed] = useState(null)
   const inputLocation = useRef()
 
@@ -23,12 +25,14 @@ function App() {
   useEffect(() => {
     if (location) {
       const getWeather = () => {
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,rain,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`, {method: 'GET', headers: { accept: 'application/json' }})
+        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,rain,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`, {method: 'GET', headers: { accept: 'application/json' }})
           .then(response => response.json())
           .then(data => {
             setWeatherData(data)
             setTemperature(Math.floor(data.current.temperature_2m))
-            setWindspeed((data.current.wind_speed_10m))
+            setWindspeed(data.current.wind_speed_10m)
+            setHumidity(data.current.relative_humidity_2m)
+            setPrecipitation(data.current.precipitation)
             setError(null)
           })
           .catch(err => {
@@ -80,7 +84,7 @@ function App() {
               )}
             </form>
 
-            <Temperature temperature={temperature} locationname={apiLocationName} windspeed={windspeed} />
+            <Temperature temperature={temperature} locationname={apiLocationName} windspeed={windspeed} humidity={humidity} precipitation={precipitation} />
             
             {weatherData && (
               <div>
