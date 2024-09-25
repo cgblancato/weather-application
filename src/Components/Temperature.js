@@ -20,8 +20,8 @@ function Temperature( {temperature, locationname, windspeed, humidity, precipita
         {temperature && (
           <div className="weather-details bg-slate-100 p-5 border-gray-300 rounded-lg drop-shadow">
               <div className="flex justify-between">
-                <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">{locationname}</h2>
-                <span className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white">{currentTemperature(temperature)}<sup>°</sup></span>
+                <h2 className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white"><span className="sr-only">Weather for </span>{locationname}</h2>
+                <span className="mb-4 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-4xl lg:text-5xl dark:text-white"><span className="sr-only">Current temperature is </span>{currentTemperature(temperature)}<sup>°</sup></span>
               </div>
 
               <div className="border-b-slate-300 border-b py-3">

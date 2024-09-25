@@ -49,13 +49,13 @@ function App() {
           setWindspeed(data.current.wind_speed_10m)
           setHumidity(data.current.relative_humidity_2m)
           setPrecipitation(data.current.precipitation)
-          setError(null)
+          setError(null) // clear any existing errors if successful
         })
         .catch(err => {
           setError("No location found. Please check your input and try again.")
         })
 
-        setError(null)
+        setError(null) // clear any existing errors if successful
       })
       .catch(err => {
         setError("No location found. Please check your input and try again.")
