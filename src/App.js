@@ -2,19 +2,15 @@ import React from "react"
 import { useState, useEffect, useRef } from "react"
 import Temperature from "./Components/Temperature"
 
-
 function App() {
   const [weatherData, setWeatherData] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState(null)
   const [location, setLocation] = useState(null)
   const [apiLocationName, setapiLocationName] = useState(null)
   const [latitude, setLatitude] = useState(0)
   const [longitude, setLongitude] = useState(0)
   const [temperature, setTemperature] = useState(null)
-  const [apparentTemperature, setApparentTemperature] = useState(null)
-  const [humidity, setHumidity] = useState(null)
-  const [precipitation, setPrecipitation] = useState(null)
-  const [windspeed, setWindspeed] = useState(null)
   const inputLocation = useRef()
 
   const handleSubmit = (e) => {
@@ -24,12 +20,31 @@ function App() {
   }
 
   useEffect(() => {
-    if (location) {
+    
+    if (isLoading) {
       const getWeather = async () => {
         const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`);
         const data = await res.json();
         return data;
       }
+
+      getWeather().then(data => {
+        setWeatherData(data)
+        setTemperature(Math.floor(data.current.temperature_2m))
+        setError(null) // clear any existing errors if successful
+        setIsLoading(false)
+      })
+      .catch(err => {
+        setError("No location found. Please check your input and try again.")
+      })
+    }
+
+  }, [latitude, longitude])
+
+  useEffect(() => {
+
+    if (location) {
+      setIsLoading(true)
 
       const getGeolocation = async () => {
         const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`);
@@ -42,26 +57,14 @@ function App() {
         setLatitude(data.results[0].latitude)
         setLongitude(data.results[0].longitude)
       }).then(() => {
-        getWeather().then(data => {
-          setWeatherData(data)
-          setTemperature(Math.floor(data.current.temperature_2m))
-          setApparentTemperature(Math.floor(data.current.apparent_temperature))
-          setWindspeed(data.current.wind_speed_10m)
-          setHumidity(data.current.relative_humidity_2m)
-          setPrecipitation(data.current.precipitation)
-          setError(null) // clear any existing errors if successful
-        })
-        .catch(err => {
-          setError("No location found. Please check your input and try again.")
-        })
-
         setError(null) // clear any existing errors if successful
       })
       .catch(err => {
         setError("No location found. Please check your input and try again.")
       })
     }
-  }, [location, latitude, longitude])
+
+  }, [location])
 
   return (
     <>
@@ -91,7 +94,7 @@ function App() {
               )}
             </form>
 
-            <Temperature temperature={temperature} locationname={apiLocationName} windspeed={windspeed} humidity={humidity} precipitation={precipitation} apparenttemperature={apparentTemperature} />
+            <Temperature temperature={temperature} locationname={apiLocationName} weatherdata={weatherData} />
             
             {weatherData && (
               <div>

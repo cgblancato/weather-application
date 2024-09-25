@@ -1,7 +1,7 @@
 import React from "react"
 import { WeatherSvg } from "weather-icons-animated";
 
-function Temperature( {temperature, locationname, windspeed, humidity, precipitation, apparenttemperature} ) {
+function Temperature( {temperature, locationname, weatherdata} ) {
     
     const currentTemperature = (temp) => {
       // can be expanded to include more weather states for more icons
@@ -25,19 +25,19 @@ function Temperature( {temperature, locationname, windspeed, humidity, precipita
               </div>
 
               <div className="border-b-slate-300 border-b py-3">
-                <p className="flex justify-between"><span><strong>Feels Like:</strong></span><span>{apparenttemperature} <sup>°</sup></span></p>
+                <p className="flex justify-between"><span><strong>Feels Like:</strong></span><span>{Math.floor(weatherdata.current.apparent_temperature)} <sup>°</sup></span></p>
               </div>
 
               <div className="border-b-slate-300 border-b py-3">
-                <p className="flex justify-between"><span><strong>Current Windspeed:</strong></span> <span>{windspeed} MP/H</span></p>
+                <p className="flex justify-between"><span><strong>Current Windspeed:</strong></span> <span>{weatherdata.current.wind_speed_10m} MP/H</span></p>
               </div>
 
               <div className="border-b-slate-300 border-b py-3">
-                <p className="flex justify-between"><span><strong>Current Humidity:</strong></span> <span>{humidity}%</span></p>
+                <p className="flex justify-between"><span><strong>Current Humidity:</strong></span> <span>{weatherdata.current.relative_humidity_2m}%</span></p>
               </div>
 
               <div className="py-3">
-                <p className="flex justify-between"><span><strong>Current Precipitation:</strong></span> <span>{precipitation}%</span></p>
+                <p className="flex justify-between"><span><strong>Current Precipitation:</strong></span> <span>{weatherdata.current.precipitation}%</span></p>
               </div>
           </div>
         )}
