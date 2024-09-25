@@ -11,6 +11,7 @@ function App() {
   const [latitude, setLatitude] = useState(0)
   const [longitude, setLongitude] = useState(0)
   const [temperature, setTemperature] = useState(null)
+  const [apparentTemperature, setApparentTemperature] = useState(null)
   const [humidity, setHumidity] = useState(null)
   const [precipitation, setPrecipitation] = useState(null)
   const [windspeed, setWindspeed] = useState(null)
@@ -24,41 +25,47 @@ function App() {
 
   useEffect(() => {
     if (location) {
-      const getWeather = () => {
-        fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,precipitation,rain,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`, {method: 'GET', headers: { accept: 'application/json' }})
-          .then(response => response.json())
-          .then(data => {
-            setWeatherData(data)
-            setTemperature(Math.floor(data.current.temperature_2m))
-            setWindspeed(data.current.wind_speed_10m)
-            setHumidity(data.current.relative_humidity_2m)
-            setPrecipitation(data.current.precipitation)
-            setError(null)
-          })
-          .catch(err => {
-            setError("No location found. Please check your input and try again.")
-          })
+      const getWeather = async () => {
+        const res = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,rain,weather_code,cloud_cover,wind_speed_10m,wind_direction_10m&hourly=temperature_2m&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch`);
+        const data = await res.json();
+        return data;
       }
-  
-      fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`, {method: 'GET', headers: { accept: 'application/json' }})
-        .then(response => response.json())
-        .then(data => {
-          setapiLocationName(data.results[0].name + ", " + data.results[0].admin1)
-          setLatitude(data.results[0].latitude)
-          setLongitude(data.results[0].longitude)
-        }).then(() => {
-          getWeather()
+
+      const getGeolocation = async () => {
+        const res = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${location}&count=10&language=en&format=json`);
+        const data = await res.json();
+        return data;
+      }
+
+      getGeolocation().then(data => {
+        setapiLocationName(data.results[0].name + ", " + data.results[0].admin1)
+        setLatitude(data.results[0].latitude)
+        setLongitude(data.results[0].longitude)
+      }).then(() => {
+        getWeather().then(data => {
+          setWeatherData(data)
+          setTemperature(Math.floor(data.current.temperature_2m))
+          setApparentTemperature(Math.floor(data.current.apparent_temperature))
+          setWindspeed(data.current.wind_speed_10m)
+          setHumidity(data.current.relative_humidity_2m)
+          setPrecipitation(data.current.precipitation)
           setError(null)
         })
         .catch(err => {
           setError("No location found. Please check your input and try again.")
         })
+
+        setError(null)
+      })
+      .catch(err => {
+        setError("No location found. Please check your input and try again.")
+      })
     }
   }, [location, latitude, longitude])
 
   return (
     <>
-      <main className="bg-gradient-to-b from-gray-700 to-gray-300 min-h-screen">
+      <main className="bg-gradient-to-b from-gray-700 to-gray-100 min-h-screen">
         <h1 className="sr-only">Weather Check Application</h1>
         <div className="container mx-auto">
           <section id="weather-container" className="p-5">
@@ -84,7 +91,7 @@ function App() {
               )}
             </form>
 
-            <Temperature temperature={temperature} locationname={apiLocationName} windspeed={windspeed} humidity={humidity} precipitation={precipitation} />
+            <Temperature temperature={temperature} locationname={apiLocationName} windspeed={windspeed} humidity={humidity} precipitation={precipitation} apparenttemperature={apparentTemperature} />
             
             {weatherData && (
               <div>
