@@ -37,4 +37,4 @@ Once the user submits, it calls the Geolocation API with the location specified 
 
 - Autocomplete library for search bar
 - Use a different geocoding library as it doesn't accept state 2 letter codes (e.g. DE, PA)
-- Further visualization for forecasted weather
+- Visualization for forecasted weather
